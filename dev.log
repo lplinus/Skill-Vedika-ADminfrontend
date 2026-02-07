@@ -1,0 +1,32 @@
+
+> skill-vedika-frontend@0.1.0 dev
+> next dev
+
+   ▲ Next.js 16.0.1 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.5.142:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ ✓ Ready in 2.5s
+ POST /api/admin/login 404 in 713ms (compile: 79ms, render: 634ms)
+ GET /api/admin/forgot-password 405 in 1029ms (compile: 1002ms, render: 27ms)
+ ○ Compiling / ...
+ GET / 200 in 3.8s (compile: 3.6s, render: 237ms)
+ GET / 200 in 434ms (compile: 174ms, render: 259ms)
+ POST /api/admin/login 404 in 1240ms (compile: 64ms, render: 1176ms)
+ GET /api/admin/login 404 in 439ms (compile: 9ms, render: 430ms)
+ GET /api/admin/forgot-password 405 in 159ms (compile: 80ms, render: 79ms)
+ POST /api/admin/login 404 in 292ms (compile: 2ms, render: 290ms)
+forgot-password proxy error: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at async POST (src\app\api\admin\forgot-password\route.js:5:18)
+  3 | export async function POST(req) {
+  4 |   try {
+> 5 |     const body = await req.json();
+    |                  ^
+  6 |
+  7 |     const incomingCookie = req.headers.get("cookie") || "";
+  8 |     const incomingAuth = req.headers.get("authorization") || req.headers.get("Authorization") || "";
+ POST /api/admin/forgot-password 500 in 400ms (compile: 48ms, render: 352ms)
