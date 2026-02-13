@@ -1,31 +1,19 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+// import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
-import {
-  FiBold,
-  FiItalic,
-  FiUnderline,
-  FiList,
-  FiRotateCcw,
-  FiRotateCw,
-  FiType,
-  FiCode,
-  FiImage,
-  FiLink,
-  FiAlignLeft,
-  FiAlignCenter,
-  FiAlignRight,
-  FiAlignJustify,
-} from "react-icons/fi";
+import {FiBold,FiItalic,FiUnderline,FiList,FiRotateCcw,FiRotateCw,FiType,
+  FiCode,FiImage,FiLink,FiAlignLeft,FiAlignCenter,FiAlignRight,FiAlignJustify,} from "react-icons/fi";
 import { BiParagraph } from "react-icons/bi";
 import { uploadToCloudinary } from "@/services/cloudinaryUpload";
 import toast from "react-hot-toast";
+import { useEditor, useEditorState,EditorContent } from "@tiptap/react";//newly added
+
 
 /* =========================================================
    FIXED: Move sub-components OUTSIDE TipTapEditor
@@ -117,6 +105,15 @@ export default function TipTapEditor({ value, onChange }) {
       }
     }
   });
+  const editorState = useEditorState({
+  editor,
+  selector: ({ editor }) => ({
+    headingLevel: editor?.isActive("heading")
+      ? editor.getAttributes("heading").level
+      : null,
+  }),
+});
+
 
   /* 🔒 Sync external value safely */
   useEffect(() => {
@@ -228,7 +225,9 @@ export default function TipTapEditor({ value, onChange }) {
             command={() =>
               editor.chain().focus().toggleHeading({ level }).run()
             }
-            active={editor.isActive("heading", { level })}
+            // active={editor.isActive("heading", { level })}
+            active={editorState.headingLevel === level}
+
           />
         ))}
 
@@ -376,8 +375,12 @@ export default function TipTapEditor({ value, onChange }) {
 
     [&_p]:my-4
     [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:my-6
-    [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:my-5
-    [&_h3]:text-xl  [&_h3]:font-semibold [&_h3]:my-4
+[&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:my-5
+[&_h3]:text-xl  [&_h3]:font-semibold [&_h3]:my-4
+[&_h4]:text-lg [&_h4]:font-semibold [&_h4]:my-3
+[&_h5]:text-base [&_h5]:font-semibold [&_h5]:my-2
+[&_h6]:text-sm [&_h6]:font-semibold [&_h6]:my-2
+
     [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4
     [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4
     [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_blockquote]:italic
@@ -398,283 +401,4 @@ export default function TipTapEditor({ value, onChange }) {
 
 
 
-// "use client";
 
-// import { useEffect, useState, useMemo } from "react";
-// import { useEditor, EditorContent } from "@tiptap/react";
-// import StarterKit from "@tiptap/starter-kit";
-// import Underline from "@tiptap/extension-underline";
-// import Image from "@tiptap/extension-image";
-// import Link from "@tiptap/extension-link";
-// import TextAlign from "@tiptap/extension-text-align";
-// import {
-//   FiBold,
-//   FiItalic,
-//   FiUnderline,
-//   FiList,
-//   FiRotateCcw,
-//   FiRotateCw,
-//   FiType,
-//   FiCode,
-//   FiImage,
-//   FiLink,
-//   FiAlignLeft,
-//   FiAlignCenter,
-//   FiAlignRight,
-//   FiAlignJustify,
-// } from "react-icons/fi";
-// import { BiParagraph } from "react-icons/bi";
-// import { uploadToCloudinary } from "@/services/cloudinaryUpload";
-// import toast from "react-hot-toast";
-
-// /* =========================
-//    Toolbar Button
-// ========================= */
-
-// function ToolbarButton({ command, active, Icon, children, title, disabled }) {
-//   return (
-//     <button
-//       type="button"
-//       onMouseDown={(e) => {
-//         e.preventDefault();
-//         if (!disabled) command();
-//       }}
-//       disabled={disabled}
-//       title={title}
-//       className={`p-2.5 rounded-lg transition-all font-semibold ${
-//         disabled
-//           ? "opacity-40 cursor-not-allowed"
-//           : active
-//           ? "bg-cyan-500 text-white"
-//           : "text-gray-600 hover:bg-cyan-50 hover:text-cyan-600"
-//       }`}
-//     >
-//       {Icon ? <Icon size={18} /> : children}
-//     </button>
-//   );
-// }
-
-// function HeadingButton({ level, command, active }) {
-//   return (
-//     <button
-//       type="button"
-//       onMouseDown={(e) => {
-//         e.preventDefault();
-//         command();
-//       }}
-//       className={`px-3 py-2 rounded-lg text-sm font-semibold ${
-//         active
-//           ? "bg-cyan-500 text-white"
-//           : "text-gray-600 hover:bg-cyan-50 hover:text-cyan-600"
-//       }`}
-//     >
-//       H<sub className="text-xs">{level}</sub>
-//     </button>
-//   );
-// }
-
-// /* =========================
-//    MAIN EDITOR
-// ========================= */
-
-// export default function TipTapEditor({ value = "", onChange }) {
-//   const [isUploadingImage, setIsUploadingImage] = useState(false);
-
-//   const extensions = useMemo(
-//     () => [
-//       StarterKit.configure({
-//         link: false,
-//         underline: false,
-//       }),
-//       Underline,
-//       Image.configure({
-//         inline: false,
-//         allowBase64: false,
-//         HTMLAttributes: {
-//           class: "max-w-full h-auto rounded-lg",
-//         },
-//       }),
-//       Link.configure({
-//         openOnClick: false,
-//         HTMLAttributes: {
-//           class: "text-blue-600 underline",
-//         },
-//       }),
-//       TextAlign.configure({
-//         types: ["heading", "paragraph"],
-//       }),
-//     ],
-//     []
-//   );
-
-//   const editor = useEditor({
-//     extensions,
-//     content: value,
-//     immediatelyRender: false,
-//     onUpdate({ editor }) {
-//       const html = editor.getHTML();
-//       if (html !== value) {
-//         onChange(html);
-//       }
-//     },
-//   });
-
-//   /* 🔒 Sync external value safely */
-//   useEffect(() => {
-//     if (!editor) return;
-//     if (editor.getHTML() === value) return;
-//     editor.commands.setContent(value || "", false);
-//   }, [value, editor]);
-
-//   /* 🔒 HARD STOP: editor not ready */
-//   if (!editor) {
-//     return (
-//       <div className="border rounded-xl bg-white p-6 text-gray-400">
-//         Loading editor…
-//       </div>
-//     );
-//   }
-
-//   /* =========================
-//      Handlers
-//   ========================= */
-
-//   const handleImageUpload = async (file) => {
-//     if (!file?.type.startsWith("image/")) {
-//       toast.error("Invalid image");
-//       return;
-//     }
-
-//     setIsUploadingImage(true);
-//     try {
-//       const res = await uploadToCloudinary(file);
-//       editor.chain().focus().setImage({ src: res.secure_url }).run();
-//       toast.success("Image uploaded");
-//     } catch {
-//       toast.error("Upload failed");
-//     } finally {
-//       setIsUploadingImage(false);
-//     }
-//   };
-
-//   const addImage = () => {
-//     const input = document.createElement("input");
-//     input.type = "file";
-//     input.accept = "image/*";
-//     input.onchange = (e) => handleImageUpload(e.target.files[0]);
-//     input.click();
-//   };
-
-//   const addLink = () => {
-//     const url = window.prompt("Enter URL");
-//     if (!url) return;
-//     editor.chain().focus().setLink({ href: url }).run();
-//   };
-
-//   /* =========================
-//      RENDER
-//   ========================= */
-
-//   return (
-//     <div className="border border-gray-300 rounded-xl bg-white overflow-hidden">
-//       {/* Toolbar */}
-//       <div className="flex flex-wrap gap-1 px-3 py-3 bg-gray-100 border-b border-gray-300">
-//         <ToolbarButton
-//           command={() => editor.chain().focus().toggleBold().run()}
-//           active={editor.isActive("bold")}
-//           Icon={FiBold}
-//         />
-//         <ToolbarButton
-//           command={() => editor.chain().focus().toggleItalic().run()}
-//           active={editor.isActive("italic")}
-//           Icon={FiItalic}
-//         />
-//         <ToolbarButton
-//           command={() => editor.chain().focus().toggleUnderline().run()}
-//           active={editor.isActive("underline")}
-//           Icon={FiUnderline}
-//         />
-
-//         {[1, 2, 3, 4, 5, 6].map((lvl) => (
-//           <HeadingButton
-//             key={lvl}
-//             level={lvl}
-//             command={() =>
-//               editor.chain().focus().toggleHeading({ level: lvl }).run()
-//             }
-//             active={editor.isActive("heading", { level: lvl })}
-//           />
-//         ))}
-
-//         <ToolbarButton
-//           command={() => editor.chain().focus().setTextAlign("left").run()}
-//           active={editor.isActive({ textAlign: "left" })}
-//           Icon={FiAlignLeft}
-//         />
-//         <ToolbarButton
-//           command={() => editor.chain().focus().setTextAlign("center").run()}
-//           active={editor.isActive({ textAlign: "center" })}
-//           Icon={FiAlignCenter}
-//         />
-//         <ToolbarButton
-//           command={() => editor.chain().focus().setTextAlign("right").run()}
-//           active={editor.isActive({ textAlign: "right" })}
-//           Icon={FiAlignRight}
-//         />
-//         <ToolbarButton
-//           command={() => editor.chain().focus().setTextAlign("justify").run()}
-//           active={editor.isActive({ textAlign: "justify" })}
-//           Icon={FiAlignJustify}
-//         />
-
-//         <ToolbarButton
-//           command={() => editor.chain().focus().toggleBulletList().run()}
-//           active={editor.isActive("bulletList")}
-//           Icon={FiList}
-//         />
-
-//         <ToolbarButton
-//           command={addImage}
-//           disabled={isUploadingImage}
-//           Icon={FiImage}
-//         />
-//         <ToolbarButton
-//           command={addLink}
-//           active={editor.isActive("link")}
-//           Icon={FiLink}
-//         />
-
-//         <ToolbarButton
-//           command={() => editor.chain().focus().undo().run()}
-//           Icon={FiRotateCcw}
-//         />
-//         <ToolbarButton
-//           command={() => editor.chain().focus().redo().run()}
-//           Icon={FiRotateCw}
-//         />
-//         <ToolbarButton
-//           command={() =>
-//             editor.chain().focus().clearNodes().unsetAllMarks().run()
-//           }
-//           Icon={FiType}
-//         />
-//       </div>
-
-//       {/* Editor */}
-//       <EditorContent
-//         editor={editor}
-//         className="
-//           px-5 py-4 min-h-[250px] max-h-[400px] overflow-y-auto text-gray-800
-
-//           [&_p]:my-4
-//           [&_h1]:text-3xl [&_h1]:font-bold
-//           [&_h2]:text-2xl [&_h2]:font-semibold
-//           [&_h3]:text-xl  [&_h3]:font-semibold
-//           [&_ul]:list-disc [&_ul]:pl-6
-//           [&_ol]:list-decimal [&_ol]:pl-6
-//           [&_img]:my-6 [&_img]:rounded-lg
-//         "
-//       />
-//     </div>
-//   );
-// }
